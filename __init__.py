@@ -79,6 +79,7 @@ class ModalEdgeToCurve(bpy.types.Operator):
         return {"FINISHED"}
 
     def modal(self, context, event):
+        D= bpy.data
         if event.type == EventType.MOUSEMOVE:  # Apply
             sensitivity = 0.002
             self.value = max(0, ((event.mouse_x - self.start_value)*sensitivity))
@@ -99,7 +100,11 @@ class ModalEdgeToCurve(bpy.types.Operator):
             if context.active_object.type == "CURVE":
                 context.object.data.bevel_depth = 0
                 bpy.ops.ed.undo()
-
+                try:
+                    D.objects.remove(self.curve_object)
+                except:
+                    pass
+                
             else:
                 bpy.ops.object.delete()
                 context.view_layer.objects.active = self.original_object
@@ -135,10 +140,10 @@ class ModalEdgeToCurve(bpy.types.Operator):
             bpy.ops.mesh.duplicate()
             bpy.ops.mesh.separate()
             bpy.ops.object.mode_set(mode=ObjectMode.OBJECT)
-            curve_object = context.selected_objects[-1]
-            context.view_layer.objects.active = curve_object
+            self.curve_object = context.selected_objects[-1]
+            context.view_layer.objects.active = self.curve_object
             bpy.ops.object.select_all(action="DESELECT")
-            curve_object.select_set(True)
+            self.curve_object.select_set(True)
             bpy.ops.object.convert(target="CURVE")
             context.object.data.fill_mode = "FULL"
             bpy.ops.object.shade_smooth()
