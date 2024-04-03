@@ -22,11 +22,11 @@ bl_info = {
     "category": "Mesh",
     "location": "View3D > Edge menu or Context menu",
     "description": "Converts selected edges into curve with extrusion",
-    "author": "Andreas Strømberg, Chris Kohl",
+    "author": "Andreas Strømberg, Chris Kohl, Orcavia",
     "wiki_url": "https://github.com/Stromberg90/Scripts/tree/master/Blender",
     "tracker_url": "https://github.com/Stromberg90/Scripts/issues",
-    "blender": (2, 80, 0),
-    "version": (1, 0, 4),
+    "blender": (4, 0, 1),
+    "version": (1, 0, 5), #sometimes i forget to change version
 }
 
 import bpy
@@ -63,8 +63,8 @@ class ModalEdgeToCurve(bpy.types.Operator):
     bl_idname = "object.edge_to_curve"
     bl_label = "Edges To Curve"
     bl_description = "Takes selected mesh edges and converts them into a curve."
-    bl_options = {"REGISTER", "UNDO"}
-
+    bl_options = {'REGISTER', 'GRAB_CURSOR', 'BLOCKING', 'UNDO'} 
+    
     @classmethod
     def poll(cls, context):
         return (
@@ -80,9 +80,9 @@ class ModalEdgeToCurve(bpy.types.Operator):
 
     def modal(self, context, event):
         if event.type == EventType.MOUSEMOVE:  # Apply
-            mouse = event.mouse_x
-            self.value = max(0, (mouse - self.start_value))
-            print(type(mouse))
+            sensitivity = 0.002
+            self.value = max(0, ((event.mouse_x - self.start_value)*sensitivity))
+
         elif event.type == EventType.WHEELUPMOUSE:
             self.resolution += 1
         elif event.type == EventType.WHEELDOWNMOUSE and self.resolution > 1:
