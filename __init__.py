@@ -80,7 +80,9 @@ class ModalEdgeToCurve(bpy.types.Operator):
 
     def modal(self, context, event):
         if event.type == EventType.MOUSEMOVE:  # Apply
-            self.value = max(0, (event.mouse_x - self.start_value))
+            mouse = event.mouse_x
+            self.value = max(0, (mouse - self.start_value))
+            print(type(mouse))
         elif event.type == EventType.WHEELUPMOUSE:
             self.resolution += 1
         elif event.type == EventType.WHEELDOWNMOUSE and self.resolution > 1:
@@ -96,6 +98,8 @@ class ModalEdgeToCurve(bpy.types.Operator):
         elif event.type in {EventType.RIGHTMOUSE, EventType.ESC}:  # Cancel
             if context.active_object.type == "CURVE":
                 context.object.data.bevel_depth = 0
+                bpy.ops.ed.undo()
+
             else:
                 bpy.ops.object.delete()
                 context.view_layer.objects.active = self.original_object
@@ -109,6 +113,7 @@ class ModalEdgeToCurve(bpy.types.Operator):
         return {"RUNNING_MODAL"}
 
     def invoke(self, context, event):
+        bpy.ops.ed.undo_push()
         self.value = 0.0
         self.start_value = event.mouse_x
         self.resolution = 2
