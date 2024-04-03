@@ -160,6 +160,11 @@ def register():
     bpy.types.VIEW3D_MT_edit_mesh_edges.append(EdgeToCurveMenuItem)
     bpy.types.VIEW3D_MT_edit_mesh_context_menu.append(EdgeToCurveMenuItem)
 
+    # Assign shortcut
+    wm = bpy.context.window_manager
+    km = wm.keyconfigs.addon.keymaps.new(name='Window', space_type='EMPTY')
+    kmi = km.keymap_items.new(ModalEdgeToCurve.bl_idname, 'E', 'PRESS', alt=True)
+
 
 def unregister():
     bpy.utils.unregister_class(ModalEdgeToCurve)
