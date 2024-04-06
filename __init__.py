@@ -31,6 +31,15 @@ bl_info = {
 
 import bpy
 
+from bpy.props import (StringProperty,
+                       BoolProperty,
+                       IntProperty,
+                       FloatProperty,
+                       FloatVectorProperty,
+                       EnumProperty,
+                       PointerProperty,
+                       )
+
 
 class MeshMode:
     VERTEX = (True, False, False)
@@ -72,7 +81,8 @@ class ModalEdgeToCurve(bpy.types.Operator):
             and context.active_object.type == "MESH"
             or context.active_object.type == "CURVE"
         )
-
+    
+        
     def execute(self, context):
         context.object.data.bevel_depth = self.value / 100.0
         context.object.data.bevel_resolution = self.resolution
@@ -80,8 +90,13 @@ class ModalEdgeToCurve(bpy.types.Operator):
 
     def modal(self, context, event):
         D= bpy.data
+        sensitivity= 0.1
+        if event.ctrl:
+            sensitivity= 1
+        if event.shift:
+            sensitivity= 0.002
+
         if event.type == EventType.MOUSEMOVE:  # Apply
-            sensitivity = 0.002
             self.value = max(0, ((event.mouse_x - self.start_value)*sensitivity))
 
         elif event.type == EventType.WHEELUPMOUSE:
